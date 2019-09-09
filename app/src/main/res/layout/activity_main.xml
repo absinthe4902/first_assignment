@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <EditText
+        android:id="@+id/log_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/log_pw"
+        android:hint="@string/id_hint"
+        android:padding="20dp">
+    </EditText>
+
+    <EditText
+        android:id="@+id/log_pw"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginTop="1dp"
+        android:hint="@string/pw_hint"
+        android:padding="20dp"></EditText>
+
+    <Button
+        android:id="@+id/log_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="@string/log_button"
+        android:layout_below="@+id/log_pw"
+        android:layout_centerHorizontal="true"
+        android:textSize="18dp"
+        ></Button>
+</RelativeLayout>
