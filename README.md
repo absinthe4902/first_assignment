@@ -1,7 +1,7 @@
-# first_assignment
-## title
+first_assignmenttitle
+=====================
 login session 
-
+-------------
 My frist assignment in DNX. 
 What I have to do is making a very simple login session. 
 When I insert correct id and pw, then the program will call REST API to get a response. 
