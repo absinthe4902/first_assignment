@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(intent);
 
                 }else {
-                    Toast.makeText(getApplicationContext(), R.string.warning, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), R.string.login_warning, Toast.LENGTH_SHORT).show();
                     text1.setText("");
                     text2.setText("");
                     text1.setHint(R.string.id_hint);

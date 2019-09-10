@@ -3,5 +3,18 @@
     <string name="id_hint">아이디를 입력하세요</string>
     <string name="pw_hint">패스워드를 입력하세요</string>
     <string name="log_button">로그인</string>
-    <string name="warning">아이디 또는 비밀번호 오류!</string>
+    
+    !--Text 말머리 만든 곳 --!
+    <string name="text_session">세션키: </string>
+    <string name="text_user_id">사용자 아이디: </string>
+    <string name="text_user_type">사용자 타입: </string>
+    <string name="text_start_mode">시작 모드: </string>
+    <string name="text_devices">페어링한 디바이스 목록: </string>
+    
+    !-- 에러 문구 만든 곳 --!
+    <string name="login_warning">아이디 또는 비밀번호 오류!</string>
+    <string name="parameter_warning">인자 전달에 오류가 있습니다</string>
+    <string name="responseBody_warning">온전한 response body가 오지 않았습니다</string>
+    <string name="response_warning">response를 성공적으로 받지 못 했습니다</string>
+    <string name="total_failure">네트워크 연결이 완전히 잘못되었습니다</string>
 </resources>
