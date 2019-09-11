@@ -19,5 +19,5 @@ After that, I have to print all of the information in the response message.
 Things to do 
 ------------
     1. 레트로핏 코드 이해 (아주 심층적으로 해야한다. 주석 하나씩 다 달아가면서 이해하기)
-    ~~2. 모든 인자값을 다 넣어도 잘 돌아가는 retrofit을 완성해야 한다.~~
+    2. ~~모든 인자값을 다 넣어도 잘 돌아가는 retrofit을 완성해야 한다.~~
     
