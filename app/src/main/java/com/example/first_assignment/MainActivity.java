@@ -23,9 +23,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        text1 = (EditText) findViewById(R.id.log_id);
-        text2 = (EditText) findViewById(R.id.log_pw);
-        btn = (Button) findViewById(R.id.log_button);
+        text1 = findViewById(R.id.log_id);
+        text2 = findViewById(R.id.log_pw);
+        btn = findViewById(R.id.log_button);
         android_id = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
 
         //id는 2로, 비밀번호는 1로 설정
@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if(text1.getText().toString().equals("2") && text2.getText().toString().equals("1") ) {
                     //맞는 조건
-                    Intent intent = new Intent(getApplicationContext(), loginActivity.class);
+                    Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                     intent.putExtra("id_value", text1.getText().toString());
                     intent.putExtra("pw_value", text2.getText().toString());
                     intent.putExtra("android_id_value", android_id);

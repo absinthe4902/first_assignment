@@ -1,5 +1,6 @@
 package com.example.first_assignment;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -8,6 +9,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -17,7 +19,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class loginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
 
     private String phone_no, password, app_device_id;
     private GetDataService myDataServie;
@@ -32,15 +34,15 @@ public class loginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.after_login);
 
-        first = (LinearLayout) findViewById(R.id.first_layout);
-        second = (LinearLayout) findViewById(R.id.second_layout);
+        first = findViewById(R.id.first_layout);
+        second = findViewById(R.id.second_layout);
 
-        tvSession = (TextView) findViewById(R.id.tv_session_key);
-        tvUserId = (TextView) findViewById(R.id.tv_user_id);
-        tvUserType = (TextView) findViewById(R.id.tv_user_type);
-        tvStartMode = (TextView) findViewById(R.id.tv_start_mode);
-        tvDevices = (TextView) findViewById(R.id.tv_devices);
-        tvFailure = (TextView) findViewById(R.id.failure);
+        tvSession = findViewById(R.id.tv_session_key);
+        tvUserId = findViewById(R.id.tv_user_id);
+        tvUserType = findViewById(R.id.tv_user_type);
+        tvStartMode = findViewById(R.id.tv_start_mode);
+        tvDevices = findViewById(R.id.tv_devices);
+        tvFailure = findViewById(R.id.failure);
 
         Intent intent = getIntent();
         phone_no = intent.getStringExtra("id_value");
@@ -60,18 +62,19 @@ public class loginActivity extends AppCompatActivity {
 
     }
 
+
     public void sendPost(jsonRequest body) {
         System.out.println("호출");
 
         myDataServie = ApiUtils.getAPIService();
         myDataServie.saveData(body).enqueue(new Callback<RetroResponse>() {
+            @SuppressLint("SetTextI18n")
             @Override
-            public void onResponse(Call<RetroResponse> call, Response<RetroResponse> response) {
+            public void onResponse(@NonNull Call<RetroResponse> call,@NonNull Response<RetroResponse> response) {
                 if(response.isSuccessful()){
                     if(response.body() != null) {
                         //진짜 여기 완전 잘 동작한 변환이다.
                         String result = response.body().getResult();
-
                         tvSession.setText(R.string.text_session+ response.body().getSession_key());
                         tvUserId.setText(R.string.text_user_id+response.body().getUser_id().toString());
                         tvUserType.setText(R.string.text_user_type+response.body().getUser_type());
@@ -104,5 +107,4 @@ public class loginActivity extends AppCompatActivity {
             }
         });
     }
-
 }
