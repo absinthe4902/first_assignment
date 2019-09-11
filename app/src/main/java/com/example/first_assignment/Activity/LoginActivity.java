@@ -1,9 +1,8 @@
-package com.example.first_assignment;
+package com.example.first_assignment.Activity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -13,6 +12,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.first_assignment.ApiUtils;
+import com.example.first_assignment.GetDataService;
+import com.example.first_assignment.HttpForm.JsonRequest;
+import com.example.first_assignment.R;
+import com.example.first_assignment.HttpForm.RetroResponse;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -23,7 +27,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private String phone_no, password, app_device_id;
     private GetDataService myDataServie;
-    private jsonRequest body;
+    private JsonRequest body;
 
 
     LinearLayout first, second;
@@ -45,17 +49,12 @@ public class LoginActivity extends AppCompatActivity {
         tvFailure = findViewById(R.id.failure);
 
         Intent intent = getIntent();
-        phone_no = intent.getStringExtra("id_value");
-        password= intent.getStringExtra("pw_value");
-        app_device_id = intent.getStringExtra("android_id_value");
+        body = (JsonRequest) intent.getSerializableExtra("request_body"); //cast 연산자 없으면 오류난다, object를 넘겼어서 특별한 getExtra 사용
 
 
-
-        if(!TextUtils.isEmpty(phone_no) && !TextUtils.isEmpty(password) && !TextUtils.isEmpty(app_device_id)){
-            //값이 정상으로 넘어온 상태
-            body = new jsonRequest(phone_no, password, app_device_id);
+        if (body.checkValid(body.getPhone_no(), body.getPassword(), body.getApp_device_id())) { //다 private으로 선언을 해서 getter로 받아왔다. 필수 3개 파라메터가 유효한지 아닌지 확인하기 위해 따로 메소드 만듬
             sendPost(body);
-        }else {
+        } else {
             Toast.makeText(this, R.string.parameter_warning, Toast.LENGTH_SHORT).show();
         }
 
@@ -63,30 +62,29 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-    public void sendPost(jsonRequest body) {
-        System.out.println("호출");
+    public void sendPost(JsonRequest body) {
 
         myDataServie = ApiUtils.getAPIService();
         myDataServie.saveData(body).enqueue(new Callback<RetroResponse>() {
             @SuppressLint("SetTextI18n")
             @Override
-            public void onResponse(@NonNull Call<RetroResponse> call,@NonNull Response<RetroResponse> response) {
-                if(response.isSuccessful()){
-                    if(response.body() != null) {
+            public void onResponse(@NonNull Call<RetroResponse> call, @NonNull Response<RetroResponse> response) {
+                if (response.isSuccessful()) {
+                    if (response.body() != null) {
                         //진짜 여기 완전 잘 동작한 변환이다.
-                        String result = response.body().getResult();
-                        tvSession.setText(R.string.text_session+ response.body().getSession_key());
-                        tvUserId.setText(R.string.text_user_id+response.body().getUser_id().toString());
-                        tvUserType.setText(R.string.text_user_type+response.body().getUser_type());
-                        tvStartMode.setText(R.string.text_start_mode+response.body().getStart_mode());
-                        //devices에 대한 부분은 아직 남겨두었다.
+                        tvSession.setText(String.format("%s %s", getResources().getString(R.string.text_session), response.body().getSession_key()));
+                        tvUserId.setText(String.format("%s %d", getResources().getString(R.string.text_user_id), response.body().getUser_id()));
+                        tvUserType.setText(String.format("%s %s", getResources().getString(R.string.text_user_type), response.body().getUser_type()));
+                        tvStartMode.setText(String.format("%s %s", getResources().getString(R.string.text_start_mode), response.body().getStart_mode()));
+                        tvDevices.setText(String.format(("%s %s"), getResources().getString(R.string.text_devices), response.body().getDevices()));
+
                         first.setVisibility(View.VISIBLE);
-                    }else {
+                    } else {
                         tvFailure.setText(R.string.responseBody_warning);
                         second.setVisibility(View.VISIBLE);
                     }
 
-                }else {
+                } else {
                     //잘 안나온 부분에 대해서 말을 해야하는데
                     tvFailure.setText(R.string.response_warning);
                     second.setVisibility(View.VISIBLE);
@@ -101,7 +99,6 @@ public class LoginActivity extends AppCompatActivity {
 
                 tvFailure.setText(R.string.total_failure);
                 second.setVisibility(View.VISIBLE);
-
 
 
             }
