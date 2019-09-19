@@ -1,12 +1,13 @@
 
 Making login session  
--------------
+====================
 
-# Uudate track #
-==========================
+## Uudate track ##
+
 Full funtion built
-[commit] (328e4cc06c02bf6e6241f0d10e4e85344c04ed4d)
+[commit] (328e4cc)
 
+328e4cc
 what's new? 
 - use all of the parametar the api needs. 
 
