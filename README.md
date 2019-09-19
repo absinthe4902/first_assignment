@@ -3,6 +3,8 @@ first_assignmenttitle
 Making login session  
 -------------
 
+328e4cc06c02bf6e6241f0d10e4e85344c04ed4d
+
 **My frist assignment in DNX.** 
 What I have to do is making a very simple login session. 
 When I insert correct id and pw, then the program will call REST API to get a response. 
