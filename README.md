@@ -5,13 +5,14 @@ Making login session
 ## Significant commit track ##
 
 
-Full funcation built
+
 
  [328e4cc](https://github.com/absinthe4902/first_assignment/commit/328e4cc06c02bf6e6241f0d10e4e85344c04ed4d)
 
 
 what's new? 
 - use all of the parametar the api needs. 
+- AKA full funcation built!
 
 
 
