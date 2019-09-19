@@ -5,7 +5,7 @@ Making login session
 ## Uudate track ##
 
 
-[title] (https://github.com/absinthe4902/first_assignment/commit/328e4cc06c02bf6e6241f0d10e4e85344c04ed4d)
+ [title] (https://github.com/absinthe4902/first_assignment/commit/328e4cc06c02bf6e6241f0d10e4e85344c04ed4d)
 
 328e4cc
 what's new? 
