@@ -4,9 +4,19 @@ Making login session
 
 ## Significant commit track ##
 
+2019.09.20
+[b2a489d](https://github.com/absinthe4902/first_assignment/commit/b2a489dec31a45a6800d45676bf6fe10c808ef6c)
 
+what's new?
+- Add all the comments to explain the code. Please read again later.
+- Add korean strings.xml to support korean language setting. 
 
+what to do?
+- *change the name of variable in RetroResponse.java*
+- Try another implement than Serializable interface
+- maybe add splash image would be great.
 
+2019.09.19
  [328e4cc](https://github.com/absinthe4902/first_assignment/commit/328e4cc06c02bf6e6241f0d10e4e85344c04ed4d)
 
 
@@ -31,9 +41,5 @@ After that, I have to print all of the information in the response message.
 
 
 
-Things to do 
-------------
-1. 레트로핏 코드 이해 (아주 심층적으로 해야한다. 주석 하나씩 다 달아가면서 이해하기)
-2. ~~모든 인자값을 다 넣어도 잘 돌아가는 retrofit을 완성해야 한다.~~
-3. 스플레쉬 이미지 만들기~
+
     
