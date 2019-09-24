@@ -11,7 +11,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
  class RetrofitClientInstance {
     //class 접근제한자는 public이랑 default 밖에 없는데 자꾸 변수 접근제안자랑 헷갈려서 보안 높이려고 class에 private 쓰다가 빨간경고 먹음
 
-    private static Retrofit retrofit;
+    //private static Retrofit retrofit;
+    static Retrofit retrofit;
     /*
     여기서도 static의 retrofit과 getClient() 메소드가 쓰인 이유는 APIUtils에서 static 형식의 메소드 호출을 하고 있어서,
      */

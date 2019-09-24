@@ -44,6 +44,8 @@ public class JsonRequest implements Serializable {
         this.app_device_id = app_device_id;
         this.app_os_type = app_os_type;
         this.app_lang = app_lang;
+
+
         this.app_version = app_version;
         this.os_version = os_version;
         this.model_name = model_name;

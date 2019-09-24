@@ -20,6 +20,7 @@ public class ApiUtils {
     그래서 getAPiService는 static 메소드가 되어야했고, 그 안에 들어가는 BASE_URL도 static 변수가 되었어야 했다.
      */
 
+
     public static GetDataService getAPIService() {
         return RetrofitClientInstance.getClient(BASE_URL).create(GetDataService.class);
     }

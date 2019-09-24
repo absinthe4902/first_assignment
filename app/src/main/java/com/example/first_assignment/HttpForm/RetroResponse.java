@@ -1,6 +1,15 @@
 package com.example.first_assignment.HttpForm;
 
-import com.google.gson.annotations.Expose;
+/**
+ * first_assignment
+ * Class: RetroResponse
+ * Created by absinthe4902 on 2019-09-24.
+ * <p>
+ * Description: retrofit client에서 받아온 response를 담는 model class
+ */
+
+import android.util.Log;
+
 import com.google.gson.annotations.SerializedName;
 
 
@@ -8,84 +17,91 @@ import java.util.List;
 
 public class RetroResponse {
 
-    /*
-    @SerializedName : Gson이 json 키를 매핑하기 위해서 필요하다. 이런경우 원래는 변수 이름에 _ 를 넣지 않는게 좋다고 한다...
-    @Expose : 이 필드가 json 직렬-비직렬화에 노출되어야 함. 얘는 옵션이다. 얘를 @Expose(serialize = false) 해두면 @SerializedName가 통하지 않는다.
 
-    직렬화: 객체를 특정한 형태로 바꾼다 json이나 xml 등등 (데이터 전송을 위한 형태변화 정도인듯)
-     */
-
+    private String result;
+    @SerializedName("error_code")
+    private String errorCode;
+    @SerializedName("error_message")
+    private String errorMessage;
     @SerializedName("user_type")
-    @Expose
-    private  String user_type;
+    private  String userType;
     @SerializedName("user_id")
-    @Expose
-    private  Integer user_id;
+    private  Integer userId;
     @SerializedName("devices")
-    @Expose
-    private List devices;
+    private List devicesList;
     @SerializedName("session_key")
-    @Expose
-    private  String session_key;
+    private  String sessionKey;
     @SerializedName("start_mode")
-    @Expose
-    private  String start_mode;    // 자바 객체 직렬화를 위한 annotation @SerializedName
+    private  String startMode;
 
 
-    public RetroResponse( String user_type, Integer user_id, List devices, String session_key, String start_mode) {
+    /**
+     *
+     * @param result 응답 결과, 추후에 isSuccessful 대신에 사용한다 "OK", "FAIL"
+     * @param errorCode 오류에대한 상세한 코드, "NO USER", "SWER001" 등
+     * @param errorMessage 단순 오류 메세지 + profiler로 봤을 때는 글자가 깨졌는데 log로 찍어보면 또 아무 이상 없다.
+     * @param userType 사용자 타입. O:착용자, G: 보호자
+     * @param userId 유저 아이디
+     * @param devicesList 페어링한 디바이스 목록
+     * @param sessionKey 세션 키
+     * @param startMode 보호자 메인 모드, U: 사용자 관리 메인, C: 캘린더 메인
+     */
+    public RetroResponse( String result, String errorCode, String errorMessage, String userType, Integer userId, List devicesList, String sessionKey, String startMode) {
 
-        this.user_type = user_type;
-        this.user_id = user_id;
-        this.devices = devices;
-        this.session_key = session_key;
-        this.start_mode = start_mode;
+        this.result = result;
+        this.errorCode = errorCode;
+        this.errorMessage = errorMessage;
+        this.userType = userType;
+        this.userId = userId;
+        this.devicesList = devicesList;
+        this.sessionKey = sessionKey;
+        this.startMode = startMode;
     }
 
-
-    @SuppressWarnings("unused")
-    public void setStart_mode(String start_mode) {
-        this.start_mode = start_mode;
+    public String getResult() {
+        return result;
     }
 
-    @SuppressWarnings("unused")
-    public void setSession_key(String session_key) {
-        this.session_key = session_key;
+    public String getErrorCode() {
+        return errorCode;
     }
 
-    @SuppressWarnings("unused")
-    public void setDevices(List devices) {
-        this.devices = devices;
+    public String getErrorMessage() {
+        return errorMessage;
     }
 
-    @SuppressWarnings("unused")
-    public void setUser_id(Integer user_id) {
-        this.user_id = user_id;
+    public String getUserType() {
+        return userType;
     }
 
-    @SuppressWarnings("unused")
-    public void setUser_type(String user_type) {
-        this.user_type = user_type;
+    public Integer getUserId() {
+        return userId;
     }
 
-    public String getStart_mode() {
-        return start_mode;
+    public List getDevicesList() {
+        return devicesList;
     }
 
-    public String getSession_key() {
-        return session_key;
+    public String getSessionKey() {
+        return sessionKey;
     }
 
-    public List getDevices() {
-        return devices;
+    public String getStartMode() {
+        return startMode;
     }
 
-    public Integer getUser_id() {
-        return user_id;
+    /**
+     * toString 대신에 디버그용으로 짠 메소드. okhttp 라이브러리로 응답을 다 보기는 하는데 log 더 써보려고 만들었다.
+     * this.getResult 와 그냥 getResult
+     * log 제목, 메세지 순서이다
+     */
+    public void responseDebug() {
+       Log.d("Tag결과", getResult());
+       Log.d("Tag에러코드", getErrorCode());
+       Log.d("Tag에러 메세지", getErrorMessage());
+       Log.d("Tag유저 타입", getUserType());
+       Log.d("Tag유저 아이디", String.format("%d", getUserId()));
+       Log.d("Tag세션키", getSessionKey());
+       Log.d("Tag시작모드: ", getStartMode());
     }
-
-    public String getUser_type() {
-        return user_type;
-    }
-
-
 }

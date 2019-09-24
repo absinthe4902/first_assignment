@@ -1,126 +1,123 @@
 package com.example.first_assignment.Activity;
 
-import android.annotation.SuppressLint;
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
+/**
+ * first_assignment
+ * Class: LoginActivity
+ * Created by absinthe4902 on 2019-09-24.
+ * <p>
+ * Description:
+ */
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.first_assignment.ApiUtils;
-import com.example.first_assignment.GetDataService;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Build;
+import android.os.Bundle;
+import android.provider.Settings;
+import android.telephony.TelephonyManager;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+
 import com.example.first_assignment.HttpForm.JsonRequest;
 import com.example.first_assignment.R;
-import com.example.first_assignment.HttpForm.RetroResponse;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import java.util.Locale;
 
 
+/*
+MainActivity 는
+1. 사용자에게 id/pw를 입력받고
+2. 나머지 파라메터(디바이스 아이디, 설정 언어, 안드로이드 버젼, 디바이스 모델, 국가코드)를 구한 다음에
+3. 리퀘스트를 보내기 위해 만들어놓은 JsonRequest객체를 선언해서 값을 다 넣고
+4. LoginActivity에 그 객체를 전달해줌과 동시에 LoginActivity로 실행이 넘어가게 한다
+ */
 public class LoginActivity extends AppCompatActivity {
 
-    /*맨처음에는 습관대로 여기다 global 변수로
-    private GetDataService myDataService;
-    private JsonRequest body
-    선언을 했는데 warning이 떠버렸다. 딱! 어떤 메소드에서만 쓰이는 변수들은 어지간하면 글로벌 변수로 만들지 않고 로컬 변수로 만드는게 좋기 때문. 아니면 private을 지우던가.(글로벌 변수 어떤 모양으로도 꼬여서 문제 생길 확률 높다)
+    EditText text1;
+    EditText text2;
+    Button btn;
 
-    global vs local
-    데이터 영역 저장 vs 스텍저장 --> 여기서 데이터 영역이란 결국 RAM 영역이라고 함
-     */
-
-    LinearLayout first, second;
-    TextView tvSession, tvUserId, tvUserType, tvStartMode, tvDevices, tvFailure;
+    String country_no;
+    String app_device_id, app_lang, os_version, model_name;
+    JsonRequest body;
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.after_login);
+        setContentView(R.layout.activity_main);
 
-        first = findViewById(R.id.first_layout);
-        second = findViewById(R.id.second_layout);
-
-        tvSession = findViewById(R.id.tv_session_key);
-        tvUserId = findViewById(R.id.tv_user_id);
-        tvUserType = findViewById(R.id.tv_user_type);
-        tvStartMode = findViewById(R.id.tv_start_mode);
-        tvDevices = findViewById(R.id.tv_devices);
-        tvFailure = findViewById(R.id.failure);  //rest api를 통해서 정보를 받아오고, Text 하나에 통으로 뿌리지 않고 text를 하나씩 설정해서 각각의 text에 정보를 set 해준다
-
-        Intent intent = getIntent();
-        JsonRequest body = (JsonRequest) intent.getSerializableExtra("request_body"); //cast 연산자 없으면 오류난다, object를 넘겼어서 특별한 getExtra 사용
+        text1 = findViewById(R.id.log_id);
+        text2 = findViewById(R.id.log_pw);
+        btn = findViewById(R.id.log_button);
 
 
-        if (body.checkValid(body.getPhone_no(), body.getPassword(), body.getApp_device_id())) { //다 private으로 선언을 해서 getter로 받아왔다. 필수 3개 파라메터가 유효한지 아닌지 확인하기 위해 따로 메소드 만듬
-            sendPost(body);
-        } else {
-            Toast.makeText(this, R.string.parameter_warning, Toast.LENGTH_SHORT).show();
-        }
-
-
-    }
-
-
-    public void sendPost(JsonRequest body) {
-
-        /*ApiUtils.getAPIService() 이런식으로 객체를 선언하지 않고도 메소드를 호출하여 쓰는게 static 방식이다.
-        그런데 ApiUtils에서 getAPIService()메소드에서 static을 빼니까 문제가 생기는것, 그럼 getAPIService는 일반 메소드라서
-        객체를 만들어서 호출을 해야하는 메소드가 됨 **APiUtils.java 참고!**
-        */
-        GetDataService myDataServie = ApiUtils.getAPIService();
-
-        /*
-        retrofit은 비동기, 동기로 작동하는게 다 가능하다.
-        그런데 api에서 정보를 받아오는걸 비동기로 background에서 작업하는게 좋을 것 같아서 enqueue()를 사용하였다.
-        동기로 사용하고 싶으면 execute()를 사용하면 된다.
+        /* 안드로이드 디바이스(하드웨어) 아이디 가져오는 함수
+        노란 줄이 뜨는 이유는 android studio에서 바꿀 수 없는 고유한 하드웨어 아이디 (SSID, IME 등)을 사용하지 않기를 권장하기 때문에.
+        광고id나 식별을 위한 api, instanceid를 쓰라고 제안하고 있으나 지금은 디바이스 아이디가 필요해서 그냥 씀.
+        잠재적으로 시스템에 문제있는 건 아니고 개인정보 문제라고 함
+        https://developer.android.com/training/articles/user-data-ids
          */
-        myDataServie.saveData(body).enqueue(new Callback<RetroResponse>() {
-            @SuppressLint("SetTextI18n")
+        app_device_id = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
+        app_lang = Locale.getDefault().getLanguage();
+        os_version = Build.VERSION.RELEASE; //안드로이드 버젼 가져오는 함수
+        model_name = Build.MODEL; //디바이스 모델 가져오는 함수
+        country_no = searchCountry(); // 국가 코드를 찾기 위해 함수를 따로 만들었다.
+
+        btn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onResponse(@NonNull Call<RetroResponse> call, @NonNull Response<RetroResponse> response) {
-                    if (response.isSuccessful()) {
-                        //진짜 여기 완전 잘 동작한 변환이다. response의 status code가 200번대 일때 참이된다.
-                        //onResponse가 http response를 받아오다보니 통신이 다 잘 되었나보다 라고 생각핳 수 있는데
-                        //404나 500이 와도 onResponse가 되어버려서 isSuccessful 메소드로 한 번 걸러준다.
+            public void onClick(View view) {
+                //id는 2로, 비밀번호는 1로 설정
+                if(text1.getText().toString().equals("2") && text2.getText().toString().equals("1") ) {
 
+                    Intent intent = new Intent(getApplicationContext(), PrintActivity.class);
 
-                        assert response.body() != null; //assert는 에러검출하는 디버깅용 코드라는데 null이 아닐때만 참으로 동작한다고 써놔서 뒤에 getSession_key()아런 애들이 null을 반환할 오류를 피할 수 있었다 (널값 자체를 거짓이라 보고 허용을 안 해서)
-                                                        //디버깅 용이라 뭔 효력이 있는 것은 아니고 오류나면 이제 어떤 수를 내야한다는 뜻
-                        tvSession.setText(String.format("%s %s", getResources().getString(R.string.text_session), response.body().getSession_key()));
-                        tvUserId.setText(String.format("%s %s", getResources().getString(R.string.text_user_id), String.valueOf(response.body().getUser_id()))); //이런 소괄호 난리 정말 피하고 싶었는데 String.format에 %s %d를 나란히 쓰면 오류나서 숫자를 문자열로 바꾸고 사용.
-                        tvUserType.setText(String.format("%s %s", getResources().getString(R.string.text_user_type), response.body().getUser_type()));
-                        tvStartMode.setText(String.format("%s %s", getResources().getString(R.string.text_start_mode), response.body().getStart_mode()));
-                        tvDevices.setText(String.format(("%s %s"), getResources().getString(R.string.text_devices), response.body().getDevices()));
+                    body = new JsonRequest(country_no, String.valueOf(text1.getText()), String.valueOf(text2.getText()), app_device_id, "A", app_lang, "1.0.12", os_version, model_name);
+                    intent.putExtra("request_body", body);  //인자 하나씩 넘겨주면 putExtra를 과도하게 해서 코드가 너무 지저분해보여 jsonRequest의 객체를 생성하여 거기다 담아서 넣어주었다.
+                    startActivity(intent);                              //edittext에서 문자열 가져오는 방법으로 toString()을 많이 썼었는데 toString()보다 String.valueOf() 가 더 좋다고 해서 String.valueOf()를 써봤다
+                    // 더 좋은 이유: 파라메터가 null이 들어가면 String.valueOf()는 null을 반환해주는데 toString()은 null exception이 나와버린다.
 
-                        first.setVisibility(View.VISIBLE);
-                    } else {
-                    //잘 안나온 부분에 대해서 말을 해야하는데
-                    tvFailure.setText(R.string.response_warning);
-                    second.setVisibility(View.VISIBLE);
+                }else {
+                    Toast.makeText(getApplicationContext(), R.string.login_warning, Toast.LENGTH_SHORT).show();
+                    text1.setText("");
+                    text2.setText("");
+                    text1.setHint(R.string.id_hint);
+                    text2.setHint(R.string.pw_hint);
                 }
             }
-
-            @Override
-            /*
-            @NonNull이 덕지덕지 붙어있는 이유 : 이것은 android support annotation이라는 라이브러리의 기능인데
-            나중에 java 문법으로만 탐지하기 어려운 결함을탐지하는 걸 도와준다고 한다.
-            NonNull은 절대 null값을 반환하지 못한다고 명시를 해 두는 건데 나중에 여기가 null이 반환되면 결함 바로 찾아 낼 것이다.
-             */
-            public void onFailure(@NonNull Call<RetroResponse> call, @NonNull Throwable t) {
-                //여긴 아마 통신이 완전 망했을 때 뭘 쓰는 곳, 아래의 2줄은 오류를 트랙킹하기 위해서 사용한다
-                System.out.println("onFailure" + call);
-                t.printStackTrace();
-
-                tvFailure.setText(R.string.total_failure);
-                second.setVisibility(View.VISIBLE);
-
-
-            }
         });
+
+
+    }
+
+    /*함수를 간단하게 만들려고 dnx에서 테스트를 진행하기로 예정한 국가들만을 넣었다
+    원래는 모든 국가가 써있는 xml 파일을 추가하고, 그걸 이용해서 찾아내는 형식을 많이 쓴다.
+     https://stackoverflow.com/questions/31578958/how-to-get-country-codecalling-code-in-android/48873912
+     */
+    public String searchCountry() {
+        String[][] country_arr = new String[][]{{"KR", "82"}, {"US", "1"}, {"MX", "52"}, {"FR", "33"}, {"ES", "34"}};
+        TelephonyManager tm = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+        String country_code =  tm.getSimCountryIso().toUpperCase();  //디바이스에서 사용중인 네트워크 통신망의 유심을 이용하여 현재 서비스 되고 있는 국가의 iso 코드를 가져온다.
+
+        /*
+        가독성의 이유로 안드로이드 스튜디오는 for보다 foreach 사용을 추천한다고 하는데,
+        1차원이면 하겠는데 2차원 배열이라서 warning을 무시하고 for을 사용했다.
+        https://stackoverflow.com/questions/32548820/why-does-android-studio-want-me-to-use-for-each-instead-of-for-loop
+        */
+        for(int i=0; i<country_arr.length; i++){
+            if(country_code.equals(country_arr[i][0])){
+                Log.d("국가번호 확인", country_arr[i][0]);
+                Log.d("국가 코드 확인", country_code);
+                return country_arr[i][1];
+            }
+        }
+
+        return "none";
     }
 }
+

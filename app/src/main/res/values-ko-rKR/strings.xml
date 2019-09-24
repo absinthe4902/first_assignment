@@ -18,3 +18,5 @@
     <string name="response_warning">response를 성공적으로 받지 못 했습니다</string>
     <string name="total_failure">네트워크 연결이 완전히 잘못되었습니다</string>
 </resources>
+
+
