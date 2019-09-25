@@ -5,7 +5,7 @@ package com.example.first_assignment.Activity;
  * Class: LoginActivity
  * Created by absinthe4902 on 2019-09-24.
  * <p>
- * Description:
+ * Description: Login을 하는 Activity, 여기서 api에 post request를 보내고 응답을 받게 된다.  여기서는 result가 0k인지 아닌지만 걸러서 로그인 시켜주고 자료에 대한 후 처리는 printActivity가 하도록 내비두자.
  */
 
 
@@ -24,28 +24,30 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 
+import com.example.first_assignment.ApiUtils;
+import com.example.first_assignment.GetDataService;
 import com.example.first_assignment.HttpForm.JsonRequest;
+import com.example.first_assignment.HttpForm.RetroResponse;
 import com.example.first_assignment.R;
 
 import java.util.Locale;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
-/*
-MainActivity 는
-1. 사용자에게 id/pw를 입력받고
-2. 나머지 파라메터(디바이스 아이디, 설정 언어, 안드로이드 버젼, 디바이스 모델, 국가코드)를 구한 다음에
-3. 리퀘스트를 보내기 위해 만들어놓은 JsonRequest객체를 선언해서 값을 다 넣고
-4. LoginActivity에 그 객체를 전달해줌과 동시에 LoginActivity로 실행이 넘어가게 한다
- */
+
 public class LoginActivity extends AppCompatActivity {
 
     EditText text1;
     EditText text2;
     Button btn;
 
+
     String country_no;
     String app_device_id, app_lang, os_version, model_name;
     JsonRequest body;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,62 +59,132 @@ public class LoginActivity extends AppCompatActivity {
         btn = findViewById(R.id.log_button);
 
 
-        /* 안드로이드 디바이스(하드웨어) 아이디 가져오는 함수
-        노란 줄이 뜨는 이유는 android studio에서 바꿀 수 없는 고유한 하드웨어 아이디 (SSID, IME 등)을 사용하지 않기를 권장하기 때문에.
-        광고id나 식별을 위한 api, instanceid를 쓰라고 제안하고 있으나 지금은 디바이스 아이디가 필요해서 그냥 씀.
-        잠재적으로 시스템에 문제있는 건 아니고 개인정보 문제라고 함
-        https://developer.android.com/training/articles/user-data-ids
-         */
+      /*
+      device의 고유 hardware id를 가져오는 것에 대한 privacy warning
+       */
         app_device_id = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
         app_lang = Locale.getDefault().getLanguage();
-        os_version = Build.VERSION.RELEASE; //안드로이드 버젼 가져오는 함수
-        model_name = Build.MODEL; //디바이스 모델 가져오는 함수
-        country_no = searchCountry(); // 국가 코드를 찾기 위해 함수를 따로 만들었다.
+        os_version = Build.VERSION.RELEASE;
+        model_name = Build.MODEL;
+        country_no = searchCountry();
+
+        body = new JsonRequest(country_no, app_device_id, "A", app_lang, "1.0.12", os_version, model_name);
+
+        Log.d("Tag국가번호", country_no);
+        Log.d("Tag디바이스 아이디", app_device_id);
+        Log.d("Tag언어", app_lang);
+        Log.d("Tag운영체제 버전", os_version);
+        Log.d("Tag모델이름", model_name);
 
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //id는 2로, 비밀번호는 1로 설정
-                if(text1.getText().toString().equals("2") && text2.getText().toString().equals("1") ) {
-
-                    Intent intent = new Intent(getApplicationContext(), PrintActivity.class);
-
-                    body = new JsonRequest(country_no, String.valueOf(text1.getText()), String.valueOf(text2.getText()), app_device_id, "A", app_lang, "1.0.12", os_version, model_name);
-                    intent.putExtra("request_body", body);  //인자 하나씩 넘겨주면 putExtra를 과도하게 해서 코드가 너무 지저분해보여 jsonRequest의 객체를 생성하여 거기다 담아서 넣어주었다.
-                    startActivity(intent);                              //edittext에서 문자열 가져오는 방법으로 toString()을 많이 썼었는데 toString()보다 String.valueOf() 가 더 좋다고 해서 String.valueOf()를 써봤다
-                    // 더 좋은 이유: 파라메터가 null이 들어가면 String.valueOf()는 null을 반환해주는데 toString()은 null exception이 나와버린다.
-
+                body.setPhone_no(String.valueOf(text1.getText()));
+                body.setPassword(String.valueOf(text2.getText()));
+/*
+                if(body.checkValid(body.getCountry_no(), body.getPhone_no(), body.getPassword())){
+                   sendPost(body);
                 }else {
-                    Toast.makeText(getApplicationContext(), R.string.login_warning, Toast.LENGTH_SHORT).show();
-                    text1.setText("");
-                    text2.setText("");
-                    text1.setHint(R.string.id_hint);
-                    text2.setHint(R.string.pw_hint);
-                }
+                    Toast.makeText(getApplicationContext(), R.string.parameter_warning, Toast.LENGTH_SHORT).show();
+                    textReset();
+                }*/
+
+                sendPost(body);
+
             }
         });
 
 
     }
 
-    /*함수를 간단하게 만들려고 dnx에서 테스트를 진행하기로 예정한 국가들만을 넣었다
-    원래는 모든 국가가 써있는 xml 파일을 추가하고, 그걸 이용해서 찾아내는 형식을 많이 쓴다.
-     https://stackoverflow.com/questions/31578958/how-to-get-country-codecalling-code-in-android/48873912
+
+    /**
+     *
+     * @param body
+     */
+    public void sendPost(final JsonRequest body) {
+
+        GetDataService myDataService = ApiUtils.getAPIService();
+
+        /*
+        result로 오류 잡으면 안된다. response가 오류가 나도 status를 200으로 찍어보내는 것은 알고 있는 사항이었는데
+        result가 OK 아니면 FAIL이라서 제대로 검출을 할 수 없다.
+        더 상세하게 나와있는 errorCode나 errorMessage로 검출을 해야한다.
+
+        이 상황에서 내가 낼 수 있는 오류
+        1. 파라메터 오류 (errorCode: SWER001 errorMessage: no parameter
+        2. 없는 유저 정보 입력, 오타 등등 (errorCode: NO USER errorMessage: invalid user
+        3. 네트워크 끊은 상태로 보내기: 이럼 http request가 아예 안 보내져서 response도 안 오고 retrofit client에서도 onFailure로 하드웨어 오류 취급한다.
+        (4) body가 null이 오는 경우는... 뭔가 잘못은 되었는데 client 오류는 아니지 않나싶었는데 json안에 json이 있는 경우 뭘 잘못하면 날 수 있는 오류라고 한다.
+         */
+
+        myDataService.getRetroResponse(body).enqueue(new Callback<RetroResponse>() {
+            @Override
+            public void onResponse(Call<RetroResponse> call, Response<RetroResponse> response) {
+                // 검출해야할 조건 1. body가 null이 아닌지, 2. result가 ok인지. 일단 body가 null이 아니어야 result도 값이 들어갈 수 있는 거 아님?
+                if(response.body()==null){
+                    //몸뚱이가 null 와버린 것에 대한 오류 처리
+                    Toast.makeText(getApplicationContext(), R.string.response_warning, Toast.LENGTH_SHORT).show();
+                    textReset();
+                }else {
+                    if(response.body().getResult().equals("OK")){
+                        response.body().responseDebug(); //로그 한 번 찍어본다. null나오면 안되니까 다 주는 쪽에서만 찍어보는 졸렬함
+
+                        Intent intent = new Intent(getApplicationContext(), PrintActivity.class);
+                        /*
+                        RetroResponse 객체를 새로 만들어서 보내지 않고 그냥 받은대로 보내면 문제가 일어나지 않을까 생각을 했는데 찍어보니까 문제가 없었다.
+                        원래는 RetroResponse 객체를 만들어 보내야지! 생각하고 화면에 찍어낼 필요 없는 result, errorCode, errorMessage를 넣지않은 생성자
+                        하나 더 만들어서 객체 만들려고 했는데 안해도 되는 짓이었음.
+                         */
+                        intent.putExtra("response_body", response.body());
+                        startActivity(intent);
+                    }else {
+                        //내가 발생시킬 수 있는
+                        Toast.makeText(getApplicationContext(), R.string.login_warning, Toast.LENGTH_SHORT).show();
+                        textReset();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<RetroResponse> call, Throwable t) {
+                /*
+                네트워크 꺼버리면 post 형식이 써지기는 한다. 근데 서버로 보내지는게 아니다.
+                okhttp로 검출한 결과 HTTP FAILED: java.net.UnknownHostException: Unable to resolve host "tpi.dnx.kr": No address associated with hostname 가 떠버림.
+                 */
+                    Toast.makeText(getApplicationContext(), R.string.hardware_error, Toast.LENGTH_SHORT).show();
+                    textReset();
+            }
+        });
+    }
+
+
+    /**
+     * 오류 발생할 때마다 command 다 치기가 너무 귀찮아서 함수로 따로 뺴서 만들었다.
+     */
+    public void textReset(){
+        text1.setText("");
+        text2.setText("");
+        text1.setHint(R.string.id_hint);
+        text2.setHint(R.string.pw_hint);
+    }
+
+
+    /**
+     *
+     * @return dnx에서 서비스하는 국가들의 국가번호를 찾아서 반환해준다.매핑값은 네트워크 통신망의 유심에서 제공해주는 서비스 국가 iso 코드
+     * upgrade 형식 : https://stackoverflow.com/questions/31578958/how-to-get-country-codecalling-code-in-android/48873912 시간 있으면 이 형식으로 바꿔서 달기
      */
     public String searchCountry() {
         String[][] country_arr = new String[][]{{"KR", "82"}, {"US", "1"}, {"MX", "52"}, {"FR", "33"}, {"ES", "34"}};
         TelephonyManager tm = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
-        String country_code =  tm.getSimCountryIso().toUpperCase();  //디바이스에서 사용중인 네트워크 통신망의 유심을 이용하여 현재 서비스 되고 있는 국가의 iso 코드를 가져온다.
+        String country_code =  tm.getSimCountryIso().toUpperCase();
 
         /*
-        가독성의 이유로 안드로이드 스튜디오는 for보다 foreach 사용을 추천한다고 하는데,
-        1차원이면 하겠는데 2차원 배열이라서 warning을 무시하고 for을 사용했다.
-        https://stackoverflow.com/questions/32548820/why-does-android-studio-want-me-to-use-for-each-instead-of-for-loop
-        */
+        for-each 사용하라고 해서 설계적 이유로 warning 무시
+         */
         for(int i=0; i<country_arr.length; i++){
             if(country_code.equals(country_arr[i][0])){
-                Log.d("국가번호 확인", country_arr[i][0]);
-                Log.d("국가 코드 확인", country_code);
                 return country_arr[i][1];
             }
         }

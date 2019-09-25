@@ -13,9 +13,10 @@ import android.util.Log;
 import com.google.gson.annotations.SerializedName;
 
 
+import java.io.Serializable;
 import java.util.List;
 
-public class RetroResponse {
+public class RetroResponse implements Serializable {
 
 
     private String result;
@@ -35,6 +36,10 @@ public class RetroResponse {
     private  String startMode;
 
 
+    @SuppressWarnings("unused")
+    public  RetroResponse() {}
+
+
     /**
      *
      * @param result 응답 결과, 추후에 isSuccessful 대신에 사용한다 "OK", "FAIL"
@@ -44,8 +49,9 @@ public class RetroResponse {
      * @param userId 유저 아이디
      * @param devicesList 페어링한 디바이스 목록
      * @param sessionKey 세션 키
-     * @param startMode 보호자 메인 모드, U: 사용자 관리 메인, C: 캘린더 메인
+     * @param startMode 보호자 메인 모드, U: 사용자 관리 메인, C: 캘린더 메인 --> 착용자 모드일때 나오지 않는다.
      */
+    @SuppressWarnings("unused")
     public RetroResponse( String result, String errorCode, String errorMessage, String userType, Integer userId, List devicesList, String sessionKey, String startMode) {
 
         this.result = result;
@@ -57,6 +63,8 @@ public class RetroResponse {
         this.sessionKey = sessionKey;
         this.startMode = startMode;
     }
+
+
 
     public String getResult() {
         return result;
@@ -78,13 +86,9 @@ public class RetroResponse {
         return userId;
     }
 
-    public List getDevicesList() {
-        return devicesList;
-    }
+    public List getDevicesList() { return devicesList; }
 
-    public String getSessionKey() {
-        return sessionKey;
-    }
+    public String getSessionKey() { return sessionKey; }
 
     public String getStartMode() {
         return startMode;

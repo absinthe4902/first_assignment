@@ -13,9 +13,9 @@
     <string name="text_devices">페어링한 디바이스 목록: </string>
     
     !-- 에러 문구 만든 곳 --!
-    <string name="login_warning">아이디 또는 비밀번호 오류!</string>
-    <string name="parameter_warning">인자 전달에 오류가 있습니다</string>
-    <string name="response_warning">response를 성공적으로 받지 못 했습니다</string>
-    <string name="total_failure">네트워크 연결이 완전히 잘못되었습니다</string>
+    <string name="hardware_error">하드웨어적 결함 발생:네트워크 연결 필요</string>
+    <string name="login_warning">존재하지 않는 계정입니다.</string>
+    <string name="parameter_warning">필수 인자가 다 채워지지 않았습니다.</string>
+    <string name="response_warning">불완전한 response가 왔습니다. 재시도 해주세요.</string>
 </resources>
 

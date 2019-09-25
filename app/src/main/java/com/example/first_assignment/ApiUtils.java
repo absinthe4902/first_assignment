@@ -1,5 +1,14 @@
 package com.example.first_assignment;
 
+
+/**
+ * <이 클래스 삭제할 예정임>
+ * first_assignment
+ * Class:APiUtils
+ * Created by absinthe4902 on 2019-09-25.
+ * <p>
+ * Description: retrofit의 객체를 build 하는 class. retrofit 객체를 http 행동 명시하는 interface에 써둠
+ */
 /*
 여기서 RetroClientInstance에서 retrofit 만드는 메소드를 이용해서 retrofit 객체를 만들고 retrofit 객체의 create 메소드를 사용해서
 GetDataService를 구현.

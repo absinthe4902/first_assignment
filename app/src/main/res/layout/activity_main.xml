@@ -12,11 +12,10 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/log_pw"
         android:hint="@string/id_hint"
-        android:padding="20dp">
-    </EditText>
+        android:inputType="number"
+        android:padding="20dp"></EditText>
 
     <EditText
-        android:inputType="number"
         android:id="@+id/log_pw"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -29,9 +28,8 @@
         android:id="@+id/log_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="@string/log_button"
         android:layout_below="@+id/log_pw"
         android:layout_centerHorizontal="true"
-        android:textSize="18dp"
-        ></Button>
+        android:hint="@string/log_button"
+        android:textSize="18dp"></Button>
 </RelativeLayout>
