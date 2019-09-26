@@ -28,7 +28,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 
-import com.example.first_assignment.RetrofitClientInstance;
+import com.example.first_assignment.NoSingletonRetroClient;
+//import com.example.first_assignment.RetrofitClientInstance;
 import com.example.first_assignment.GetDataService;
 import com.example.first_assignment.HttpForm.JsonRequest;
 import com.example.first_assignment.HttpForm.RetroResponse;
@@ -39,7 +40,7 @@ import java.util.Locale;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
+//import retrofit2.Retrofit;
 
 
 public class LoginActivity extends AppCompatActivity {
@@ -123,7 +124,12 @@ public class LoginActivity extends AppCompatActivity {
          */
 
 
-        GetDataService myDataService = RetrofitClientInstance.getClient().create(GetDataService.class);
+       /* 싱글톤 형식을 사용
+       GetDataService myDataService = RetrofitClientInstance.getClient().create(GetDataService.class);
+       */
+
+       NoSingletonRetroClient noSingletonRetroClient = new NoSingletonRetroClient();
+       GetDataService myDataService = noSingletonRetroClient.noGetClient().create(GetDataService.class);
 
         progressDialog = ProgressDialog.show(this, "", getResources().getString(R.string.progress_loding) );
         myDataService.getRetroResponse(body).enqueue(new Callback<RetroResponse>() {

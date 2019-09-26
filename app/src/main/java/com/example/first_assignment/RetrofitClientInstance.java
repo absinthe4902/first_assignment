@@ -14,8 +14,6 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 
-
-
 /*
 <싱글톤>
  내가 처음에 짠 코드의 형태가 싱글톤이었다. getClient를 선언한 이유는 싱글톤 클래스는 app이 시작될 때 딱 한 번 만 메모리를 할당하고 (싱글톤도 new 사용하는, 객체라서 heap 영역에 만들어짐)
@@ -50,7 +48,7 @@ public class RetrofitClientInstance {
         retrofit = new retrofit2.Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
-                .client(subClient) // 1. 이 코드 무엇인지 2. OkHttpClient는 무엇인지 HttpLoggingInterceptor은 무엇인지
+                .client(subClient) //.client()로 들어갈 수 있는 인자 자체가 OkHttpClient밖에 없었다. 이 코드가 불러오는 것은 http request에 사용한 request 메소드이고, 더 깊게 들어가서 CallFactory를 호출하는데 이게 retrofit에서 쓴 call함수의 인스턴스를 가져온다.
                 .build();
     }
 
@@ -58,7 +56,6 @@ public class RetrofitClientInstance {
         return retrofit;
     }
 
-
-
 }
+
 
