@@ -9,18 +9,24 @@ package com.example.first_assignment.Activity;
  */
 
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 
@@ -42,7 +48,8 @@ public class LoginActivity extends AppCompatActivity {
     EditText text1;
     EditText text2;
     Button btn;
-
+    ProgressBar progressBar;
+    RelativeLayout mainLayout;
 
     String country_no;
     String app_device_id, app_lang, os_version, model_name;
@@ -57,6 +64,8 @@ public class LoginActivity extends AppCompatActivity {
         text1 = findViewById(R.id.log_id);
         text2 = findViewById(R.id.log_pw);
         btn = findViewById(R.id.log_button);
+        progressBar = findViewById(R.id.progress_bar);
+        mainLayout = findViewById(R.id.main_layout);
 
 
       /*
@@ -81,14 +90,12 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View view) {
                 body.setPhone_no(String.valueOf(text1.getText()));
                 body.setPassword(String.valueOf(text2.getText()));
-/*
-                if(body.checkValid(body.getCountry_no(), body.getPhone_no(), body.getPassword())){
-                   sendPost(body);
-                }else {
-                    Toast.makeText(getApplicationContext(), R.string.parameter_warning, Toast.LENGTH_SHORT).show();
-                    textReset();
-                }*/
 
+                /*
+                일부러 오류 만들때 계속 키보드 남아있는게 싫어서 코드로 내렸다.
+                 */
+                text1.onEditorAction(EditorInfo.IME_ACTION_DONE);
+                text2.onEditorAction(EditorInfo.IME_ACTION_DONE);
                 sendPost(body);
 
             }
@@ -100,7 +107,10 @@ public class LoginActivity extends AppCompatActivity {
 
     /**
      *
-     * @param body
+     * @param body request를 보낼 파라메터를 담고 있는 json 객체
+     *             1. retrofit으로 request 보내고, 받기
+     *             2. response의 errorMessage로 오류 검출 및 처리
+     *             3. 성공하면 intent로 PrintActivity에 값 넘겨줌
      */
     public void sendPost(final JsonRequest body) {
 
@@ -118,40 +128,46 @@ public class LoginActivity extends AppCompatActivity {
         (4) body가 null이 오는 경우는... 뭔가 잘못은 되었는데 client 오류는 아니지 않나싶었는데 json안에 json이 있는 경우 뭘 잘못하면 날 수 있는 오류라고 한다.
          */
 
+        progressBar.setVisibility(View.VISIBLE);
+        mainLayout.setBackgroundColor(Color.GRAY);
+
         myDataService.getRetroResponse(body).enqueue(new Callback<RetroResponse>() {
             @Override
-            public void onResponse(Call<RetroResponse> call, Response<RetroResponse> response) {
+            public void onResponse(@NonNull  Call<RetroResponse> call, @NonNull Response<RetroResponse> response) {
+                progressBar.setVisibility(View.GONE);
+                mainLayout.setBackgroundColor(Color.WHITE);
                 // 검출해야할 조건 1. body가 null이 아닌지, 2. result가 ok인지. 일단 body가 null이 아니어야 result도 값이 들어갈 수 있는 거 아님?
                 if(response.body()==null){
                     //몸뚱이가 null 와버린 것에 대한 오류 처리
-                    Toast.makeText(getApplicationContext(), R.string.response_warning, Toast.LENGTH_SHORT).show();
                     textReset();
+                    Toast.makeText(getApplicationContext(), R.string.response_warning, Toast.LENGTH_SHORT).show();
                 }else {
-                    if(response.body().getResult().equals("OK")){
-                        response.body().responseDebug(); //로그 한 번 찍어본다. null나오면 안되니까 다 주는 쪽에서만 찍어보는 졸렬함
+                    if(response.body().getErrorMessage().equals("no parameter")){
+                        //필수 파라메터를 다 채워서 보내지 않았음
+                        textReset();
+                        Toast.makeText(getApplicationContext(), R.string.parameter_warning, Toast.LENGTH_SHORT).show();
+                    }else if(response.body().getErrorMessage().equals("invalid user")){
+                        //존재하지 않는 사용자
+                        textReset();
+                        Toast.makeText(getApplicationContext(), R.string.login_warning, Toast.LENGTH_SHORT).show();
+                    }else {
+                        //성공한 케이스
+                        response.body().responseDebug();
 
                         Intent intent = new Intent(getApplicationContext(), PrintActivity.class);
-                        /*
-                        RetroResponse 객체를 새로 만들어서 보내지 않고 그냥 받은대로 보내면 문제가 일어나지 않을까 생각을 했는데 찍어보니까 문제가 없었다.
-                        원래는 RetroResponse 객체를 만들어 보내야지! 생각하고 화면에 찍어낼 필요 없는 result, errorCode, errorMessage를 넣지않은 생성자
-                        하나 더 만들어서 객체 만들려고 했는데 안해도 되는 짓이었음.
-                         */
                         intent.putExtra("response_body", response.body());
                         startActivity(intent);
-                    }else {
-                        //내가 발생시킬 수 있는
-                        Toast.makeText(getApplicationContext(), R.string.login_warning, Toast.LENGTH_SHORT).show();
-                        textReset();
                     }
                 }
             }
 
             @Override
-            public void onFailure(Call<RetroResponse> call, Throwable t) {
+            public void onFailure(@NonNull Call<RetroResponse> call, @NonNull Throwable t) {
                 /*
                 네트워크 꺼버리면 post 형식이 써지기는 한다. 근데 서버로 보내지는게 아니다.
                 okhttp로 검출한 결과 HTTP FAILED: java.net.UnknownHostException: Unable to resolve host "tpi.dnx.kr": No address associated with hostname 가 떠버림.
                  */
+                    progressBar.setVisibility(View.GONE);
                     Toast.makeText(getApplicationContext(), R.string.hardware_error, Toast.LENGTH_SHORT).show();
                     textReset();
             }
@@ -167,6 +183,8 @@ public class LoginActivity extends AppCompatActivity {
         text2.setText("");
         text1.setHint(R.string.id_hint);
         text2.setHint(R.string.pw_hint);
+        //커서 처음 edittext로 옮기기
+        text1.requestFocus();
     }
 
 
@@ -179,6 +197,7 @@ public class LoginActivity extends AppCompatActivity {
         String[][] country_arr = new String[][]{{"KR", "82"}, {"US", "1"}, {"MX", "52"}, {"FR", "33"}, {"ES", "34"}};
         TelephonyManager tm = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
         String country_code =  tm.getSimCountryIso().toUpperCase();
+
 
         /*
         for-each 사용하라고 해서 설계적 이유로 warning 무시

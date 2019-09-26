@@ -1,34 +1,24 @@
 package com.example.first_assignment.Activity;
 
 /**
- * first_assignment
- * Class: PrintActivity
- * Created by absinthe4902 on 2019-09-24.
- * <p>
- * Description: LoginActivity에서 retrofit을 이용해서 받아온 response를 화면에 뿌려주기만 하는 클래스
+  first_assignment
+  Class: PrintActivity
+  Created by absinthe4902 on 2019-09-24.
+  <p>
+  Description: LoginActivity에서 retrofit을 이용해서 받아온 response를 화면에 뿌려주기만 하는 클래스
  */
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.first_assignment.ApiUtils;
-import com.example.first_assignment.GetDataService;
-import com.example.first_assignment.HttpForm.JsonRequest;
-import com.example.first_assignment.R;
 import com.example.first_assignment.HttpForm.RetroResponse;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import com.example.first_assignment.R;
 
 
 public class PrintActivity extends AppCompatActivity {
@@ -42,23 +32,21 @@ public class PrintActivity extends AppCompatActivity {
     데이터 영역 저장 vs 스텍저장 --> 여기서 데이터 영역이란 결국 RAM 영역이라고 함
      */
 
-    LinearLayout first, second;
-    TextView tvSession, tvUserId, tvUserType, tvStartMode, tvDevices, tvFailure;
+
+    TextView tvSession, tvUserId, tvUserType, tvStartMode, tvDevices;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.after_login);
 
-        first = findViewById(R.id.first_layout);
-        second = findViewById(R.id.second_layout);
+
 
         tvSession = findViewById(R.id.tv_session_key);
         tvUserId = findViewById(R.id.tv_user_id);
         tvUserType = findViewById(R.id.tv_user_type);
         tvStartMode = findViewById(R.id.tv_start_mode);
         tvDevices = findViewById(R.id.tv_devices);
-        tvFailure = findViewById(R.id.failure);  //rest api를 통해서 정보를 받아오고, Text 하나에 통으로 뿌리지 않고 text를 하나씩 설정해서 각각의 text에 정보를 set 해준다
 
         Intent intent = getIntent();
         RetroResponse retroResponse = (RetroResponse) intent.getSerializableExtra("response_body"); //cast 연산자 없으면 오류난다, object를 넘겼어서 특별한 getExtra 사용
@@ -71,7 +59,7 @@ public class PrintActivity extends AppCompatActivity {
         tvDevices.setText(String.format(("%s %s"), getResources().getString(R.string.text_devices), retroResponse.getDevicesList()));
 
 
-        first.setVisibility(View.VISIBLE);
+
 
 
     }

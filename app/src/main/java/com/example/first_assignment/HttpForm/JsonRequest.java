@@ -8,9 +8,6 @@ package com.example.first_assignment.HttpForm;
  * Description: 리퀘스트 body에 객채 하나만을 깔끔하게 넣기 위해 만든 class. 실 사용은 GetDataService와 LoginActivity에서 한다.
  */
 
-import java.io.Serializable;
-
-
 public class JsonRequest  {
     private String phone_no;
     private String password;
@@ -49,6 +46,7 @@ public class JsonRequest  {
     }
 
 
+    @SuppressWarnings("unused")
     public JsonRequest(String country_no, String phone_no, String password, String app_device_id, String app_os_type, String app_lang, String app_version, String os_version, String model_name) {
         this.country_no = country_no;
         this.phone_no = phone_no;
@@ -56,8 +54,6 @@ public class JsonRequest  {
         this.app_device_id = app_device_id;
         this.app_os_type = app_os_type;
         this.app_lang = app_lang;
-
-
         this.app_version = app_version;
         this.os_version = os_version;
         this.model_name = model_name;
@@ -65,19 +61,6 @@ public class JsonRequest  {
     }
 
 
-    /**
-     *
-     * @param phone_no 아이디
-     * @param password 비밀번호
-     * @param app_device_id 디바이스 하드웨어
-     * @return request의 필수 구성 요소가 다 들어가면 true, 아니면 false. LoginActivity에서 우선적으로 판별 후, server에 request 보냄
-     *
-     * object 자체를 null 검출해도 쓸모 없다.
-     * string==null은 string이 null인지 검출, isEmpty()는 string에 ""로 null은 아닌데 비어있는지 검출, String.equals(null) 쓰지마세요.
-     */
-    public boolean checkValid(String phone_no, String password, String app_device_id){
-        return ((phone_no != null && !phone_no.isEmpty()) && (password != null && !password.isEmpty()) && (app_device_id != null && !app_device_id.isEmpty()));
-    }
 
     @SuppressWarnings("unused")
     public void setPhone_no(String phone_no) {
@@ -104,6 +87,7 @@ public class JsonRequest  {
         this.app_device_id = app_device_id;
     }
 
+    @SuppressWarnings("unused")
     public String getApp_device_id() {
         return app_device_id;
     }

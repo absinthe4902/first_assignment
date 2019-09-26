@@ -4,7 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activity.LoginActivity">
+    tools:context=".Activity.LoginActivity"
+    android:padding="50dp"
+    android:id="@+id/main_layout">
+
+
+
 
     <EditText
         android:id="@+id/log_id"
@@ -13,7 +18,9 @@
         android:layout_above="@+id/log_pw"
         android:hint="@string/id_hint"
         android:inputType="number"
+        android:maxLength="12"
         android:padding="20dp"></EditText>
+
 
     <EditText
         android:id="@+id/log_pw"
@@ -22,6 +29,8 @@
         android:layout_centerVertical="true"
         android:layout_marginTop="1dp"
         android:hint="@string/pw_hint"
+        android:inputType="textPassword"
+        android:maxLength="12"
         android:padding="20dp"></EditText>
 
     <Button
@@ -32,4 +41,14 @@
         android:layout_centerHorizontal="true"
         android:hint="@string/log_button"
         android:textSize="18dp"></Button>
+
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:visibility="gone" />
+
 </RelativeLayout>
