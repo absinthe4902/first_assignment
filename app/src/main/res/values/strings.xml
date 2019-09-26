@@ -11,6 +11,7 @@
     <string name="text_user_type">사용자 타입: </string>
     <string name="text_start_mode">시작 모드: </string>
     <string name="text_devices">페어링한 디바이스 목록: </string>
+    <string name="progress_loding">api와 통신중...</string>
     
     !-- 에러 문구 만든 곳 --!
     <string name="hardware_error">하드웨어적 결함 발생:네트워크 연결 필요</string>

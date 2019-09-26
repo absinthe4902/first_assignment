@@ -13,9 +13,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -25,12 +25,10 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 
-import com.example.first_assignment.ApiUtils;
+import com.example.first_assignment.RetrofitClientInstance;
 import com.example.first_assignment.GetDataService;
 import com.example.first_assignment.HttpForm.JsonRequest;
 import com.example.first_assignment.HttpForm.RetroResponse;
@@ -41,31 +39,31 @@ import java.util.Locale;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.Retrofit;
 
 
 public class LoginActivity extends AppCompatActivity {
 
+
     EditText text1;
     EditText text2;
     Button btn;
-    ProgressBar progressBar;
-    RelativeLayout mainLayout;
+    ProgressDialog progressDialog;
+
 
     String country_no;
     String app_device_id, app_lang, os_version, model_name;
     JsonRequest body;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Log.d("TagLoginActivity", String.format("%s", "처음 activity 시작"));
 
         text1 = findViewById(R.id.log_id);
         text2 = findViewById(R.id.log_pw);
         btn = findViewById(R.id.log_button);
-        progressBar = findViewById(R.id.progress_bar);
-        mainLayout = findViewById(R.id.main_layout);
 
 
       /*
@@ -78,12 +76,10 @@ public class LoginActivity extends AppCompatActivity {
         country_no = searchCountry();
 
         body = new JsonRequest(country_no, app_device_id, "A", app_lang, "1.0.12", os_version, model_name);
-
-        Log.d("Tag국가번호", country_no);
-        Log.d("Tag디바이스 아이디", app_device_id);
-        Log.d("Tag언어", app_lang);
-        Log.d("Tag운영체제 버전", os_version);
-        Log.d("Tag모델이름", model_name);
+        /*
+        phone_no와 password를 제외한 값들의 log를 찍어본다
+         */
+        body.requestDebug();
 
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -114,8 +110,6 @@ public class LoginActivity extends AppCompatActivity {
      */
     public void sendPost(final JsonRequest body) {
 
-        GetDataService myDataService = ApiUtils.getAPIService();
-
         /*
         result로 오류 잡으면 안된다. response가 오류가 나도 status를 200으로 찍어보내는 것은 알고 있는 사항이었는데
         result가 OK 아니면 FAIL이라서 제대로 검출을 할 수 없다.
@@ -128,26 +122,27 @@ public class LoginActivity extends AppCompatActivity {
         (4) body가 null이 오는 경우는... 뭔가 잘못은 되었는데 client 오류는 아니지 않나싶었는데 json안에 json이 있는 경우 뭘 잘못하면 날 수 있는 오류라고 한다.
          */
 
-        progressBar.setVisibility(View.VISIBLE);
-        mainLayout.setBackgroundColor(Color.GRAY);
 
+        GetDataService myDataService = RetrofitClientInstance.getClient().create(GetDataService.class);
+
+        progressDialog = ProgressDialog.show(this, "", getResources().getString(R.string.progress_loding) );
         myDataService.getRetroResponse(body).enqueue(new Callback<RetroResponse>() {
             @Override
             public void onResponse(@NonNull  Call<RetroResponse> call, @NonNull Response<RetroResponse> response) {
-                progressBar.setVisibility(View.GONE);
-                mainLayout.setBackgroundColor(Color.WHITE);
+                progressDialog.dismiss();
+                Log.d("TagOnResponse", String.format("%s", "onResponse 호출됨"));
                 // 검출해야할 조건 1. body가 null이 아닌지, 2. result가 ok인지. 일단 body가 null이 아니어야 result도 값이 들어갈 수 있는 거 아님?
                 if(response.body()==null){
-                    //몸뚱이가 null 와버린 것에 대한 오류 처리
+                    Log.d("TagonResponse", String.format("%s", "response일부에서 null이 검출됨"));
                     textReset();
                     Toast.makeText(getApplicationContext(), R.string.response_warning, Toast.LENGTH_SHORT).show();
                 }else {
                     if(response.body().getErrorMessage().equals("no parameter")){
-                        //필수 파라메터를 다 채워서 보내지 않았음
+                        Log.d("TagonResponse", String.format("%s", "파라메터를 다 채우지 않았다"));
                         textReset();
                         Toast.makeText(getApplicationContext(), R.string.parameter_warning, Toast.LENGTH_SHORT).show();
                     }else if(response.body().getErrorMessage().equals("invalid user")){
-                        //존재하지 않는 사용자
+                        Log.d("TagOnResponse", String.format("%s", "없는 사용자"));
                         textReset();
                         Toast.makeText(getApplicationContext(), R.string.login_warning, Toast.LENGTH_SHORT).show();
                     }else {
@@ -163,11 +158,13 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(@NonNull Call<RetroResponse> call, @NonNull Throwable t) {
+                Log.d("TagOnFailure", String.format("%s", "onFailure 호출됨"));
+                progressDialog.dismiss();
                 /*
                 네트워크 꺼버리면 post 형식이 써지기는 한다. 근데 서버로 보내지는게 아니다.
                 okhttp로 검출한 결과 HTTP FAILED: java.net.UnknownHostException: Unable to resolve host "tpi.dnx.kr": No address associated with hostname 가 떠버림.
                  */
-                    progressBar.setVisibility(View.GONE);
+
                     Toast.makeText(getApplicationContext(), R.string.hardware_error, Toast.LENGTH_SHORT).show();
                     textReset();
             }

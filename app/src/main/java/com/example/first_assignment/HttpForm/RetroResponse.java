@@ -50,6 +50,7 @@ public class RetroResponse implements Serializable {
      * @param devicesList 페어링한 디바이스 목록
      * @param sessionKey 세션 키
      * @param startMode 보호자 메인 모드, U: 사용자 관리 메인, C: 캘린더 메인 --> 착용자 모드일때 나오지 않는다.
+     *                  retrofit client에서 받은 값들 새로 객체 만들어서 넘기지 않아도 되기 때문에 생성자 사용할 일이 없음.
      */
     @SuppressWarnings("unused")
     public RetroResponse( String result, String errorCode, String errorMessage, String userType, Integer userId, List devicesList, String sessionKey, String startMode) {
@@ -65,12 +66,19 @@ public class RetroResponse implements Serializable {
     }
 
 
-
-    public String getResult() {
+    /**
+     *
+     * @return result 값. RetroResponse의 responseDedug에서만 사용해서 public이 아닌 private으로 선언
+     */
+    private String getResult() {
         return result;
     }
 
-    public String getErrorCode() {
+    /**
+     *
+     * @return error message 값. getResult와 같은 이유로 private으로 선언
+     */
+    private String getErrorCode() {
         return errorCode;
     }
 
@@ -100,12 +108,12 @@ public class RetroResponse implements Serializable {
      * log 제목, 메세지 순서이다
      */
     public void responseDebug() {
-       Log.d("Tag결과", getResult());
-       Log.d("Tag에러코드", getErrorCode());
-       Log.d("Tag에러 메세지", getErrorMessage());
-       Log.d("Tag유저 타입", getUserType());
-       Log.d("Tag유저 아이디", String.format("%d", getUserId()));
-       Log.d("Tag세션키", getSessionKey());
-       Log.d("Tag시작모드: ", getStartMode());
+       Log.d("TagRetroResponse결과", getResult());
+       Log.d("TagRetroResponse에러코드", getErrorCode());
+       Log.d("TagRetroResponse에러 메세지", getErrorMessage());
+       Log.d("TagRetroResponse유저 타입", getUserType());
+       Log.d("TagRetroResponse유저 아이디", String.format("%d", getUserId()));
+       Log.d("TagRetroResponse세션키", getSessionKey());
+       Log.d("TagRetroResponse시작모드: ", getStartMode());
     }
 }

@@ -1,5 +1,7 @@
 package com.example.first_assignment.HttpForm;
 
+import android.util.Log;
+
 /**
  * first_assignment
  * Class: JsonRequest
@@ -87,8 +89,7 @@ public class JsonRequest  {
         this.app_device_id = app_device_id;
     }
 
-    @SuppressWarnings("unused")
-    public String getApp_device_id() {
+    private String getApp_device_id() {
         return app_device_id;
     }
 
@@ -117,8 +118,8 @@ public class JsonRequest  {
         this.app_os_type = app_os_type;
     }
 
-    @SuppressWarnings("unused")
-    public String getModel_name() {
+
+    private String getModel_name() {
         return model_name;
     }
 
@@ -127,13 +128,13 @@ public class JsonRequest  {
         return os_version;
     }
 
-    @SuppressWarnings("unused")
-    public String getApp_version() {
+
+    private String getApp_version() {
         return app_version;
     }
 
-    @SuppressWarnings("unused")
-    public String getApp_lang() {
+
+    private String getApp_lang() {
         return app_lang;
     }
 
@@ -147,8 +148,22 @@ public class JsonRequest  {
         return app_os_type;
     }
 
-    @SuppressWarnings("unused")
-    public String getCountry_no() {
+
+    private String getCountry_no() {
         return country_no;
+    }
+
+
+    /**
+     * RetroResponse와 마찬가지로 request 값을 찍어보기 위해 debug 코드 작성.
+     * 값을 입력받는 phone_no와 password는 null이 일어날 확률이 있어서 값 있을 때만 찍어지는 조건의 log 걸어두었다.
+     * 여기서만 사용하는 getter는 private으로 선언함
+     */
+    public void requestDebug() {
+        Log.d("TagJsonRequest국가번호", getCountry_no());
+        Log.d("TagJsonRequest디바이스 아이디", getApp_device_id());
+        Log.d("Tag언어", getApp_lang());
+        Log.d("Tag운영체제 버전", getApp_version());
+        Log.d("Tag모델이름", getModel_name());
     }
 }
