@@ -48,7 +48,7 @@ public class PrintActivity extends AppCompatActivity {
         tvDevices = findViewById(R.id.tv_devices);
 
         Intent intent = getIntent();
-        RetroResponse retroResponse = (RetroResponse) intent.getSerializableExtra("response_body"); //cast 연산자 없으면 오류난다, object를 넘겼어서 특별한 getExtra 사용
+        RetroResponse retroResponse = intent.getParcelableExtra("response_body"); //cast 연산자 없으면 오류난다, object를 넘겼어서 특별한 getExtra 사용
 
 
         tvSession.setText(String.format("%s %s", getResources().getString(R.string.text_session), retroResponse.getSessionKey()));

@@ -4,8 +4,6 @@
     <item
         android:drawable="@drawable/splash_moon"/>
 
-
-<!-- v23 drawable 만들었다. 신경을 쓰지 않아도 되는 warning-->
     <item
         android:height="300dp"
         android:width="300dp"
