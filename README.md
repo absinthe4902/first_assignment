@@ -2,25 +2,61 @@
 Making login session  
 ====================
 
+## Significant commit track ##
+
+2019.09.27
+[dfeb0db](https://github.com/absinthe4902/first_assignment/commit/dfeb0db13b9b1d9fe4f5579354580d559f1b4cd0)
+
+what's new?
+- RetroResponse (implement Parcelable interface for better performance instead Serilizable interface, @SerilizedName, name of variable, removing setter, insert debugging code, add more getter)
+- JsonRequest (adding new constructor without phone_no and password) 
+- MainActivity->LoginActovoty (LoginActivity is connecting with rest api to login, add progress dialog to make asynch to synch, release login situation to accour more error, use RetroResponse.errorCode to detect more specific error from retrofit connection)
+- LoginACtivity->PrintACtivity
+- RetroClientInstance (keep using singleton pattern with more secure error prevention. But not the best way)
+- NoSingletonRetoroInstance (not using singleton pattern to make retrofit instance, make individual NoSingletonRetroInstance instance to make various retrofit instance. 
+- write many log 
+- add class comment and method comment. 
+- splash screen with dnx logo.
+
+2019.09.20
+[b2a489d](https://github.com/absinthe4902/first_assignment/commit/b2a489dec31a45a6800d45676bf6fe10c808ef6c)
+
+what's new?
+- Add all the comments to explain the code. Please read again later.
+- Add korean strings.xml to support korean language setting. 
+
+what to do?
+- *change the name of variable in RetroResponse.java*
+- Try another implement than Serializable interface
+- maybe add splash image would be great.
+
+2019.09.19
+ [328e4cc](https://github.com/absinthe4902/first_assignment/commit/328e4cc06c02bf6e6241f0d10e4e85344c04ed4d)
+
+
+what's new? 
+- use all of the parametar the api needs. 
+- AKA full funcation built!
+
 ## *First Review* ##
 2019.09.20
 1. General
    + 이론적으로 찾아보는 것도 좋지만 직접 일단 다 때려넣어보면서 확인해라 
    + static 잘 모르겠으면 안 쓰는게 상책이다. 
    + 그런데 static 모르면 되겠나. static은 정적변수이다. 이게 전역변수와는 무엇이 다를까? 
-   + ~~가비지 컬렉션에 대한 가벼운 공부~~
+   + 가비지 컬렉션에 대한 가벼운 공부
    + ### 싱글톤 디자인 패턴 synchronized에 대하여 ###
    + alt+enter는 warning 없앤다는 생각보다는 **Why?** 인간들이 여기서 이걸 왜 쓸까 항상 이유를 찾아라. 그게 공부다.
    + alt+enter해서 나오는 해결방법이 여러개다. 다 살펴보고 뭐가 더 좋은지 이해를 꼼꼼이 따져라. **코드 분석** 
    + 근데 사실 alt+enter 해결 나올때 잘 모르겠다면 if로 짜진 선택지가 제일 좋음
    + Log를 최대한 많이 남겨보는 연습을 하라. Runtask로 쳐다보면서 검출하기 어렵다. 
    + Debug도 사용을 해보도록 노력해보자...
-   + ~~method용, class 용 주석이 따로 있다.~~
-   + ~~method 주석은 /** + enter 이다. 이걸 쓰면 파라메터나 리턴 형식 틀을 자동으로 만들어줘서 편하다.~~ 
+   + method용, class 용 주석이 따로 있다.
+   + method 주석은 /** + enter 이다. 이걸 쓰면 파라메터나 리턴 형식 틀을 자동으로 만들어줘서 편하다. 
    + [클래스 주석 참고링크](https://thinkerodeng.tistory.com/227)
-   + ~~주석 // 남발 그만해라. 주석은 혼자 보는게 아니다. 누가 봐도 이해를 할 수 있도록 제대로 된 형식의 주석을 쓰려고 노력해라.~~
+   + 주석 // 남발 그만해라. 주석은 혼자 보는게 아니다. 누가 봐도 이해를 할 수 있도록 제대로 된 형식의 주석을 쓰려고 노력해라.
    + 접근제한자 너무 어려운데 그래도 제대로 이해를 하려고 노력해야한다. 
-   + ~~spring에서는 annotation을 진짜 많이 쓴다. 뭔지 모르니까 한 번 들여다 보자.~~
+   + spring에서는 annotation을 진짜 많이 쓴다. 뭔지 모르니까 한 번 들여다 보자.
 2. class RetroResponse 
    + ~~선언한 이름이 서버의 파라메터 이름과 동일하면 @SerializedName annotation을 사용하지 않아도 된다.~~
    + ~~대부분은 다르게 사용하고, 자바에서 변수 선언할 때 이름 형태는 user_type 보다는 userType 이런 형태를 사용한다.~~ 
@@ -43,37 +79,11 @@ Making login session
    + ~~이때 사용하는게 api response의 result 코드이다. 얠 보면 진짜 성공인지 가라인지 판별나니까 (이걸로 로그인 되나 안되나 잡으라는건가?? 싶기도 함)~~
    + ~~onFailure은 하드웨어적인 오류로 참으로 대국적인 오류다.~~ 
 5. class RetrofitClientInstance 
-   + 왜 꼭 getClient를 사용해서 객체를 만들었는가? 그냥 클래스 객체 만들어서 넘겨도 되는데. (진짜 RetofitClientInstance라는 객체를 만들어서 쓸 수 있다. 왜 이거 안썼는지 생각해라)
+   + ~~왜 꼭 getClient를 사용해서 객체를 만들었는가? 그냥 클래스 객체 만들어서 넘겨도 되는데. (진짜 RetofitClientInstance라는 객체를 만들어서 쓸 수 있다. 왜 이거 안썼는지 생각해라)~~
    + ~~profiler 쓰지 말고 okHttpClient 라이브러리에서 제공하는 logging inspection을 사용해라. Client 검사라서 retrofit client 만드는 class 안에 들어가 있는 것. 여기도 결국 로그를 찍는 것이다. 헤더까지 다 보여준다.~~ 
-   + getClient의 static 지워보기. 객체를 들고다니는게 아니라 클래스 전체를 들고나니는 느낌으로 뭐 하라는데 뭐지...
-6. ~~GetDataService~~ 
+   + ~~getClient의 static 지워보기. 객체를 들고다니는게 아니라 클래스 전체를 들고나니는 느낌으로 뭐 하라는데 뭐지...~~
+6. GetDataService 
    + ~~메소드 이름 saveDate 너무 오해 유발하는 이름이고 더 확실하게 얘가 뭘 하는지 보여주는 이름을 써야한다.~~ 
-   
-   
-## Significant commit track ##
-
-2019.09.20
-[b2a489d](https://github.com/absinthe4902/first_assignment/commit/b2a489dec31a45a6800d45676bf6fe10c808ef6c)
-
-what's new?
-- Add all the comments to explain the code. Please read again later.
-- Add korean strings.xml to support korean language setting. 
-
-what to do?
-- *change the name of variable in RetroResponse.java*
-- Try another implement than Serializable interface
-- maybe add splash image would be great.
-
-2019.09.19
- [328e4cc](https://github.com/absinthe4902/first_assignment/commit/328e4cc06c02bf6e6241f0d10e4e85344c04ed4d)
-
-
-what's new? 
-- use all of the parametar the api needs. 
-- AKA full funcation built!
-
-
-
 --------------------------------
 
 **My frist assignment in DNX.** 
